@@ -11,24 +11,27 @@ AWS.config.update({
 
 // Create the Service interface for dynamoDB
 var dynamodb = new AWS.DynamoDB.DocumentClient();
-const TABLE_NAME = "Locations";
 
 //console.log(`region : ${process.env.AWS_DEFAULT_REGION}`);
 //console.log(`accessKeyId : ${process.env.AWS_ACCESS_KEY_ID}`);
 //console.log(`secretAccessKey : ${process.env.AWS_SECRET_ACCESS_KEY}`);
 
-export const getLocations = async () => {
+export const getCollection = async (collectionName) => {
   const params = {
-    TableName: TABLE_NAME,
+    TableName: collectionName,
   };
-  const Locationsdata = await dynamodb.scan(params).promise();
-  console.log("Locationsdata: ", Locationsdata);
-  return Locationsdata;
+  const data = await dynamodb.scan(params).promise();
+  console.log("getCollectionData: ", data);
+  return data;
 };
 
-export const getbyId = async (tableName, filter, filterValue) => {
+export const getCollectionbyId = async (
+  CollectionName,
+  filter,
+  filterValue
+) => {
   const params = {
-    TableName: tableName,
+    TableName: CollectionName,
     FilterExpression: filter + " = :ftr",
     ExpressionAttributeValues: {
       ":ftr": filterValue,
@@ -36,4 +39,21 @@ export const getbyId = async (tableName, filter, filterValue) => {
   };
   const data = await dynamodb.scan(params).promise();
   return data;
+};
+
+export const insertUser = (collectionName, itemObject, res) => {
+  const params = {
+    TableName: collectionName,
+    Item: itemObject,
+  };
+
+  dynamodb.put(params, (err, data) => {
+    if (err) {
+      console.error("Error adding item: ", err);
+      res.status(500).json({ error: "Could not add item" });
+    } else {
+      console.log("User added successfully: ", data);
+      res.json({ message: "User added successfully" });
+    }
+  });
 };
