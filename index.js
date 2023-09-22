@@ -1,5 +1,5 @@
 import express from "express";
-//import { PORT } from "./config.js";
+import { PORT } from "./config.js";
 import { getLocations } from "./dynamo.js";
 
 const app = express();
